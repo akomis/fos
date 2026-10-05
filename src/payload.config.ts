@@ -96,7 +96,13 @@ export default buildConfig({
       collections: {
         media: {
           generateFileURL: ({ filename }: { filename: string }) => {
-            return `${process.env.MINIO_ENDPOINT}/${process.env.MINIO_BUCKET}/${filename}`;
+            // MINIO_ENDPOINT may be a private-network address that only the
+            // server can reach, so URLs handed to browsers use the public host.
+            const publicHost = process.env.NEXT_PUBLIC_BUCKET_HOST;
+            const base = publicHost
+              ? `https://${publicHost}`
+              : process.env.MINIO_ENDPOINT;
+            return `${base}/${process.env.MINIO_BUCKET}/${filename}`;
           },
         },
       },
