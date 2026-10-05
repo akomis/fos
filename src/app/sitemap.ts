@@ -4,6 +4,9 @@ import { LOCALES, getAllPageSlugs, pagePath } from '@/lib/pages'
 
 const BASE_URL = 'https://www.fosjewels.com'
 
+// Rendered per request - the database is not reachable during the build.
+export const dynamic = 'force-dynamic'
+
 const entry = (
   path: string,
   rest: Omit<MetadataRoute.Sitemap[number], 'url'>,
