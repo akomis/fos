@@ -5,6 +5,13 @@ export const Media: CollectionConfig = {
   upload: {
     mimeTypes: ['image/*'],
     bulkUpload: true,
+    // Applies to files served through /api/media/file (the route used with
+    // the Railway bucket). Kept to a day rather than immutable because
+    // editing a crop in the admin rewrites the same filename.
+    modifyResponseHeaders: ({ headers }) => {
+      headers.set('Cache-Control', 'public, max-age=86400')
+      return headers
+    },
   },
   admin: {
     group: 'Store',

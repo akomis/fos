@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
     dsn: "https://ec274f6c76f33524ceccd9436378c9c6@o4510566655524864.ingest.de.sentry.io/4510566658408528",
 
     // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-    tracesSampleRate: 1,
+    tracesSampleRate: 0.1,
 
     // Enable logs to be sent to Sentry
     enableLogs: true,

@@ -29,6 +29,11 @@ import { LandingPage } from "./globals/LandingPage";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// Media storage backend. Defaults to MinIO; set STORAGE_BACKEND=railway to
+// read and write the Railway bucket instead. Both configurations stay in place
+// so switching back is an env var change.
+const useRailwayBucket = process.env.STORAGE_BACKEND === "railway";
+
 export default buildConfig({
   serverURL: process.env.FRONTEND_URL || "http://localhost:3000",
   admin: {
@@ -96,6 +101,11 @@ export default buildConfig({
       collections: {
         media: {
           generateFileURL: ({ filename }: { filename: string }) => {
+            // The Railway bucket is private, so files are served through
+            // Payload's own file route on this app.
+            if (useRailwayBucket) {
+              return `/api/media/file/${encodeURIComponent(filename)}`;
+            }
             // MINIO_ENDPOINT may be a private-network address that only the
             // server can reach, so URLs handed to browsers use the public host.
             const publicHost = process.env.NEXT_PUBLIC_BUCKET_HOST;
@@ -106,16 +116,29 @@ export default buildConfig({
           },
         },
       },
-      bucket: process.env.MINIO_BUCKET as string,
-      config: {
-        forcePathStyle: true,
-        endpoint: process.env.MINIO_ENDPOINT as string,
-        credentials: {
-          accessKeyId: process.env.MINIO_ACCESS_KEY as string,
-          secretAccessKey: process.env.MINIO_SECRET_KEY as string,
-        },
-        region: "auto",
-      },
+      bucket: (useRailwayBucket
+        ? process.env.S3_BUCKET
+        : process.env.MINIO_BUCKET) as string,
+      config: useRailwayBucket
+        ? {
+            // Railway buckets use virtual-hosted style URLs.
+            forcePathStyle: false,
+            endpoint: process.env.S3_ENDPOINT as string,
+            credentials: {
+              accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+              secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+            },
+            region: process.env.S3_REGION || "auto",
+          }
+        : {
+            forcePathStyle: true,
+            endpoint: process.env.MINIO_ENDPOINT as string,
+            credentials: {
+              accessKeyId: process.env.MINIO_ACCESS_KEY as string,
+              secretAccessKey: process.env.MINIO_SECRET_KEY as string,
+            },
+            region: "auto",
+          },
     }),
     stripePlugin({
       stripeSecretKey: process.env.STRIPE_API_KEY || "",
