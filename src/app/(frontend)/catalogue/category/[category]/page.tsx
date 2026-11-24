@@ -4,6 +4,7 @@ import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
 import { getPayloadClient } from "@/lib/payload";
+import { activeCategoryWhere, visibleProductWhere } from "@/lib/visibility";
 import {
   Catalogue as CatalogueType,
   Category,
@@ -26,7 +27,9 @@ export default async function CategoryPage({ params }: Props) {
   // First, find the category by handle
   const categoryResult = await payload.find({
     collection: "categories",
-    where: { handle: { equals: categoryHandle } },
+    where: {
+      and: [{ handle: { equals: categoryHandle } }, activeCategoryWhere],
+    },
     limit: 1,
   });
 
@@ -42,6 +45,7 @@ export default async function CategoryPage({ params }: Props) {
     await Promise.all([
       payload.find({
         collection: "categories",
+        where: activeCategoryWhere,
         depth: 2,
         sort: "_order",
         limit: 100,
@@ -56,8 +60,7 @@ export default async function CategoryPage({ params }: Props) {
       payload.find({
         collection: "products",
         where: {
-          status: { equals: "published" },
-          category: { equals: category.id },
+          and: [visibleProductWhere, { category: { equals: category.id } }],
         },
         depth: 2,
         sort: "-createdAt",

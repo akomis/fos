@@ -30,11 +30,21 @@ export async function POST(request: NextRequest) {
     const product = await payload.findByID({
       collection: 'products',
       id: productId,
+      depth: 1,
     })
 
     if (!product) {
       log.warn('Product not found', { cartId, productId })
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    // Unpublished products and products in an inactive category are hidden
+    // from the store, so they must not be addable either.
+    const categoryActive =
+      typeof product.category === 'object' ? product.category?.active !== false : true
+    if (product.status !== 'published' || !categoryActive) {
+      log.warn('Product not visible on store', { cartId, productId })
+      return NextResponse.json({ error: 'Product is no longer available' }, { status: 400 })
     }
 
     const inventory = product.inventory ?? 1

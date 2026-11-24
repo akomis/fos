@@ -169,6 +169,10 @@ export interface Product {
 export interface Category {
   id: number;
   _order?: string | null;
+  /**
+   * Show this category and its products on the store
+   */
+  active?: boolean | null;
   name: string;
   /**
    * URL-friendly slug (e.g., "bracelets")
@@ -526,6 +530,7 @@ export interface ProductsSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   _order?: T;
+  active?: T;
   name?: T;
   handle?: T;
   headerDesktop?: T;

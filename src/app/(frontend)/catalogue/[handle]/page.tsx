@@ -1,4 +1,5 @@
 import { getPayloadClient } from "@/lib/payload";
+import { visibleProductWhere } from "@/lib/visibility";
 import { Product } from "@/lib/store";
 import { notFound } from "next/navigation";
 import ProductDetails from "./ProductDetails";
@@ -17,8 +18,7 @@ export default async function ProductPage({ params }: Props) {
   const products = await payload.find({
     collection: "products",
     where: {
-      handle: { equals: handle },
-      status: { equals: "published" },
+      and: [{ handle: { equals: handle } }, visibleProductWhere],
     },
     depth: 2,
     limit: 1,

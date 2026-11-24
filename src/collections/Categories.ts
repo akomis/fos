@@ -7,6 +7,7 @@ export const Categories: CollectionConfig = {
   admin: {
     group: 'Store',
     useAsTitle: 'name',
+    defaultColumns: ['name', 'handle', 'active'],
     components: {
       views: {
         list: {
@@ -22,6 +23,16 @@ export const Categories: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
+    {
+      name: 'active',
+      type: 'checkbox',
+      defaultValue: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Show this category and its products on the store',
+      },
+    },
     {
       type: 'row',
       fields: [

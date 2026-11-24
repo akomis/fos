@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { activeCategoryWhere } from '@/lib/visibility'
 
 export async function GET() {
   try {
@@ -7,6 +8,7 @@ export async function GET() {
 
     const categories = await payload.find({
       collection: 'categories',
+      where: activeCategoryWhere,
       depth: 2,
       sort: '_order',
       limit: 100,

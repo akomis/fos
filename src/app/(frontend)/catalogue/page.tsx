@@ -4,6 +4,7 @@ import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
 import { getPayloadClient } from "@/lib/payload";
+import { activeCategoryWhere, visibleProductWhere } from "@/lib/visibility";
 import {
   Catalogue as CatalogueType,
   Category,
@@ -21,6 +22,7 @@ export default async function Catalogue() {
     await Promise.all([
       payload.find({
         collection: "categories",
+        where: activeCategoryWhere,
         depth: 2,
         sort: "_order",
         limit: 100,
@@ -34,7 +36,7 @@ export default async function Catalogue() {
       }) as unknown as Promise<LandingPage>,
       payload.find({
         collection: "products",
-        where: { status: { equals: "published" } },
+        where: visibleProductWhere,
         depth: 2,
         sort: "-createdAt",
         limit: 100,

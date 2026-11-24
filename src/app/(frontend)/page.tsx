@@ -7,6 +7,7 @@ import Section from "@/components/Section";
 import Link from "next/link";
 import { getPages, pagePath } from "@/lib/pages";
 import { getPayloadClient } from "@/lib/payload";
+import { activeCategoryWhere } from "@/lib/visibility";
 import type { Category, LandingPage } from "@/lib/store";
 import { Suspense } from "react";
 
@@ -18,6 +19,7 @@ const Header = async () => {
 
   const categoriesResult = await payload.find({
     collection: "categories",
+    where: activeCategoryWhere,
     depth: 2,
     sort: "_order",
     limit: 100,

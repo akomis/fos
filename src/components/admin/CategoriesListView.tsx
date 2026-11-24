@@ -138,6 +138,11 @@ export default function CategoriesListView(props: ListViewClientProps) {
                       No image
                     </div>
                   )}
+                  {category.active === false && (
+                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-xs font-semibold uppercase tracking-wide">
+                      Inactive
+                    </span>
+                  )}
                   <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-2">
                     <span className="w-fit px-3 py-1 rounded bg-black/30 backdrop-blur-sm text-white font-bold text-lg truncate max-w-full">
                       {category.name}

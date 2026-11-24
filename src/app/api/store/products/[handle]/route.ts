@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { visibleProductWhere } from '@/lib/visibility'
 
 export async function GET(
   request: NextRequest,
@@ -12,8 +13,7 @@ export async function GET(
     const products = await payload.find({
       collection: 'products',
       where: {
-        handle: { equals: handle },
-        status: { equals: 'published' },
+        and: [{ handle: { equals: handle } }, visibleProductWhere],
       },
       depth: 2,
       limit: 1,

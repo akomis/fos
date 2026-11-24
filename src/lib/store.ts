@@ -240,6 +240,7 @@ export interface Category {
   name: string;
   handle: string;
   description?: string;
+  active?: boolean;
   headerDesktop?: Media;
   headerMobile?: Media;
 }

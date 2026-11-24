@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getPayloadClient } from '@/lib/payload'
+import { activeCategoryWhere, visibleProductWhere } from '@/lib/visibility'
 import { LOCALES, getAllPageSlugs, pagePath } from '@/lib/pages'
 
 const BASE_URL = 'https://www.fosjewels.com'
@@ -18,9 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all published products
   const products = await payload.find({
     collection: 'products',
-    where: {
-      status: { equals: 'published' },
-    },
+    where: visibleProductWhere,
     limit: 1000,
     select: {
       handle: true,
@@ -31,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all categories
   const categories = await payload.find({
     collection: 'categories',
+    where: activeCategoryWhere,
     limit: 100,
     select: {
       handle: true,

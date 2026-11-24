@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { activeCategoryWhere, visibleProductWhere } from '@/lib/visibility'
 import { logger } from '@/lib/logger'
 import type { Where } from 'payload'
 
@@ -14,15 +15,15 @@ export async function GET(request: NextRequest) {
 
     const payload = await getPayloadClient()
 
-    const where: Where = {
-      status: { equals: 'published' },
-    }
+    const conditions: Where[] = [visibleProductWhere]
 
     if (categoryHandle) {
       // First find the category by handle
       const categoryResult = await payload.find({
         collection: 'categories',
-        where: { handle: { equals: categoryHandle } },
+        where: {
+          and: [{ handle: { equals: categoryHandle } }, activeCategoryWhere],
+        },
         limit: 1,
       })
 
@@ -31,12 +32,12 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ products: [] })
       }
 
-      where.category = { equals: categoryResult.docs[0].id }
+      conditions.push({ category: { equals: categoryResult.docs[0].id } })
     }
 
     const products = await payload.find({
       collection: 'products',
-      where,
+      where: { and: conditions },
       depth: 2,
       sort: '-createdAt',
       limit: 100,
